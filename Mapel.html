@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mata Pelajaran</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav {
+            width: 200px;
+            background-color: #f4f4f4;
+            padding: 10px;
+            float: left;
+            height: 100vh;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav li {
+            margin-bottom: 10px;
+        }
+
+        nav a {
+            display: block;
+            padding: 8px;
+            text-decoration: none;
+            background-color: #ddd;
+            color: #333;
+            border-radius: 5px;
+        }
+
+        section {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Mata Pelajaran</h1>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="Dashboard.html">Halaman Utama</a></li>
+            <li><a href="Mapel.html">Mapel</a></li>
+            <li><a href="Event.html">Event</a></li>
+            <li><a href="Data.html">Data Guru & Siswa</a></li>
+            <li><a href="#">Jadwal Pelajaran</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>Daftar Mata Pelajaran</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Mata Pelajaran</th>
+                </tr>
+            </thead>
+            <tbody id="mapelTableBody">
+                <!-- Data from the database will be appended here -->
+            </tbody>
+        </table>
+
+        <!-- Form to insert data into the database -->
+        <form id="formMapel">
+            <label for="inputMapel">Tambah Mata Pelajaran:</label>
+            <input type="text" id="inputMapel" name="Mata_Pelajaran" required>
+            <button type="button" onclick="insertData()">Tambah</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Sistem Informasi</p>
+    </footer>
+
+    <!-- Script to fetch data from the database and insert data -->
+    <script>
+        function insertData() {
+            var mataPelajaran = document.getElementById('inputMapel').value;
+            if (mataPelajaran !== "") {
+                fetch('insert_data.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'Mata_Pelajaran=' + encodeURIComponent(mataPelajaran),
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        console.log(data);
+                        fetchData(); // Refresh data after inserting
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        function fetchData() {
+            fetch('fetch_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    populateTable(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function populateTable(data) {
+            var tableBody = document.getElementById('mapelTableBody');
+            tableBody.innerHTML = ""; // Clear existing rows
+
+            data.forEach(function (item, index) {
+                var row = document.createElement('tr');
+                row.innerHTML = '<td>' + (index + 1) + '</td><td>' + item.Mata_Pelajaran + '</td>';
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fetch data on page load
+        window.onload = function () {
+            fetchData();
+        };
+    </script>
+</body>
+
+</html>
